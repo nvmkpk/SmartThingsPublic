@@ -20,14 +20,14 @@
  *
  */
 metadata {
-	definition (name: "Zooz Power Strip", namespace: "smartthings", author: "SmartThings") {
+	definition (name: "Zooz Power Strip", namespace: "smartthings", author: "SmartThings", mcdSync: true) {
 		capability "Switch"
 		capability "Refresh"
 		capability "Actuator"
 		capability "Sensor"
 		capability "Configuration"
 
-		fingerprint manufacturer: "015D", prod: "0651", model: "F51C", deviceJoinName: "Zooz ZEN 20 Power Strip"
+		fingerprint manufacturer: "015D", prod: "0651", model: "F51C", deviceJoinName: "Zooz Outlet" //Zooz ZEN 20 Power Strip
 	}
 
 	tiles {

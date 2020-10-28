@@ -24,13 +24,13 @@ metadata {
 		capability "Health Check"
 		capability "Configuration"
 
-		fingerprint deviceId: '0xA102', inClusters: '0x30,0x9C,0x60,0x85,0x8E,0x72,0x70,0x86,0x80,0x84,0x7A'
-		fingerprint mfr: "021F", prod: "0003", model: "0085", deviceJoinName: "Dome Leak Sensor"
-		fingerprint mfr: "0258", prod: "0003", model: "1085", deviceJoinName: "NEO Coolcam Water Sensor" //NAS-WS03ZE
-		fingerprint mfr: "0086", prod: "0102", model: "007A", deviceJoinName: "Aeotec Water Sensor 6" //US
-		fingerprint mfr: "0086", prod: "0002", model: "007A", deviceJoinName: "Aeotec Water Sensor 6" //EU
-		fingerprint mfr: "0086", prod: "0202", model: "007A", deviceJoinName: "Aeotec Water Sensor 6" //AU
-		fingerprint mfr: "000C", prod: "0201", model: "000A", deviceJoinName: "HomeSeer LS100+ Water Sensor"
+		fingerprint deviceId: '0xA102', inClusters: '0x30,0x9C,0x60,0x85,0x8E,0x72,0x70,0x86,0x80,0x84,0x7A', deviceJoinName: "Water Leak Sensor"
+		fingerprint mfr: "021F", prod: "0003", model: "0085", deviceJoinName: "Dome Water Leak Sensor" //Dome Leak Sensor
+		fingerprint mfr: "0258", prod: "0003", model: "1085", deviceJoinName: "NEO Coolcam Water Leak Sensor" //NAS-WS03ZE //NEO Coolcam Water Sensor
+		fingerprint mfr: "0086", prod: "0102", model: "007A", deviceJoinName: "Aeotec Water Leak Sensor" //US //Aeotec Water Sensor 6
+		fingerprint mfr: "0086", prod: "0002", model: "007A", deviceJoinName: "Aeotec Water Leak Sensor" //EU //Aeotec Water Sensor 6
+		fingerprint mfr: "0086", prod: "0202", model: "007A", deviceJoinName: "Aeotec Water Leak Sensor" //AU //Aeotec Water Sensor 6
+		fingerprint mfr: "000C", prod: "0201", model: "000A", deviceJoinName: "HomeSeer Water Leak Sensor" //HomeSeer LS100+ Water Sensor
 	}
 
 	simulator {
@@ -82,6 +82,11 @@ def updated() {
 def configure() {
 	if (isAeotec()) {
 		def commands = []
+		commands << encap(zwave.associationV2.associationSet(groupingIdentifier:3, nodeId: [zwaveHubNodeId]))
+		commands << encap(zwave.associationV2.associationSet(groupingIdentifier:4, nodeId: [zwaveHubNodeId]))
+		// send basic sets to devices in groups 3 and 4 when water is detected
+		commands << encap(zwave.configurationV1.configurationSet(parameterNumber: 0x58, scaledConfigurationValue: 1, size: 1))
+		commands << encap(zwave.configurationV1.configurationSet(parameterNumber: 0x59, scaledConfigurationValue: 1, size: 1))
 		// Tell sensor to send us battery information instead of USB power information
 		commands << encap(zwave.configurationV1.configurationSet(parameterNumber: 0x5E, scaledConfigurationValue: 1, size: 1))
 		response(delayBetween(commands, 1000) + ["delay 20000", encap(zwave.wakeUpV1.wakeUpNoMoreInformation())])
